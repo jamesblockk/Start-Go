@@ -7,6 +7,7 @@ Example for GO
 ### HelloGO
 
 - Swagger
+- gRPC
 
 ### DB
 
