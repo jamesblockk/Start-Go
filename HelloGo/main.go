@@ -5,6 +5,10 @@ import (
 )
 
 func main() {
+
+}
+
+func task1() {
 	fmt.Println("Hello GO")
 
 	s := sum(1, 3, 5, 3)
