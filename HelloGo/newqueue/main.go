@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	controlTest := control.Shared()
 	controlTest.Init()
 	controlTest.Start()

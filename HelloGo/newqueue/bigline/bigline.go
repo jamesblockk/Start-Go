@@ -12,6 +12,14 @@ func (line *BigLine) Start() {
 	go line.checkMasterExpire()
 }
 
+func (line *BigLine) Push(items ...interface{}) {
+	line.Sub.Queue.Put(items)
+
+	if line.Sub.Queue.Len() > line.MaxSubQueue {
+		line.mergeToMaster(line.Sub.Queue, "mergeToMaster")
+	}
+}
+
 func (line *BigLine) checkSubExpire() {
 	for {
 
@@ -30,17 +38,7 @@ func (line *BigLine) checkMasterExpire() {
 	}
 }
 
-func (line *BigLine) Push(items ...interface{}) {
-	line.Sub.Queue.Put(items)
-
-	if line.Sub.Queue.Len() > line.MaxSubQueue {
-		line.mergeToMaster(line.Sub.Queue, "mergeToMaster")
-	}
-}
-
 func (line *BigLine) mergeToMaster(q *queue.Queue, comment string) {
-
-	fmt.Println("go")
 	data := make(chan interface{})
 	isLoad := make(chan bool)
 
@@ -48,7 +46,7 @@ func (line *BigLine) mergeToMaster(q *queue.Queue, comment string) {
 		for {
 			select {
 			case msg := <-data:
-				line.already(msg)
+				line.putToMaster(msg)
 				fmt.Println("OK", comment)
 			}
 			<-isLoad
@@ -65,7 +63,7 @@ func (line *BigLine) mergeToMaster(q *queue.Queue, comment string) {
 	fmt.Println(" The Queue length == 0 Or waiting time < second ", comment)
 }
 
-func (line *BigLine) already(in interface{}) {
+func (line *BigLine) putToMaster(in interface{}) {
 	line.Master.Put(in)
 }
 
